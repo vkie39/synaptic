@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Welcome to synaptic!</title>
+</head>
+
+<body class="centerBody">
+    <div class="box">
+        <p class="titleText">Synaptic에 오신 걸 환영합니다!</p>
+        <button class="button" onclick="location.href='new_proj'">프로젝트 생성하기</button>
+        <button class="button" onclick="location.href='import_proj'">프로젝트 불러오기</button>
+    </div>
+</body>
+
+</html>

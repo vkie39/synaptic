@@ -1,0 +1,147 @@
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Arial', sans-serif;
+background-color: white;
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 20px;
+}
+
+.chat-container {
+background-color: white;
+border-radius: 20px;
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+width: 100%;
+max-width: 800px;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+}
+
+.chat-header {
+padding: 20px;
+display: flex;
+align-items: center;
+gap: 15px;
+background-color: #FFAE1A;
+color: white;
+}
+
+.bot-avatar {
+width: 50px;
+height: 50px;
+background-color: white;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+color: #FFAE1A;
+font-size: 24px;
+}
+
+.chat-messages {
+padding: 20px;
+display: flex;
+flex-direction: column;
+gap: 15px;
+max-height: 400px;
+overflow-y: auto;
+background-color: #FFAE1A;
+}
+
+.message {
+max-width: 80%;
+padding: 15px;
+border-radius: 20px;
+line-height: 1.4;
+}
+
+.bot-message {
+background-color: white;
+align-self: flex-start;
+border-bottom-left-radius: 5px;
+color: #333;
+}
+
+.user-message {
+background-color: #f0ecc7;
+color: #333;
+align-self: flex-end;
+border-bottom-right-radius: 5px;
+}
+
+.quick-buttons {
+display: flex;
+flex-direction: column;
+gap: 10px;
+padding: 20px;
+}
+
+.quick-button {
+background-color: white;
+color: #FFAE1A;
+border: 2px solid #FFAE1A;
+padding: 12px 24px;
+border-radius: 25px;
+cursor: pointer;
+transition: all 0.3s;
+font-weight: 500;
+text-align: center;
+}
+
+.quick-button:hover {
+background-color: #FFAE1A;
+color: white;
+}
+
+.input-container {
+display: flex;
+padding: 20px;
+gap: 10px;
+border-top: 1px solid #eee;
+background-color: white;
+}
+
+input[type="text"] {
+flex-grow: 1;
+padding: 15px;
+border: 2px solid #FFAE1A;
+border-radius: 25px;
+outline: none;
+font-size: 16px;
+transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+border-color: #f0ecc7;
+}
+
+button.send-button {
+background-color: #FFAE1A;
+color: white;
+border: none;
+width: 50px;
+height: 50px;
+border-radius: 50%;
+cursor: pointer;
+transition: background-color 0.3s;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+button.send-button:hover {
+background-color: #f0ecc7;
+color: #333;
+}
+
+.emoji {
+font-style: normal;
+}

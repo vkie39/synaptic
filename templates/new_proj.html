@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로젝트 계획</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .chat-container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #FFAE1A;
+            color: white;
+            border-bottom: 2px solid #f0ecc7;
+            text-align: center;
+        }
+
+        .chat-header h2 {
+            margin-bottom: 5px;
+        }
+
+        .chat-header p.description {
+            font-size: 14px;
+            color: #f0ecc7;
+        }
+
+        .chat-messages {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #FFAE1A;
+            margin-bottom: 15px; /* Header와 간격 추가 */
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 20px;
+            line-height: 1.4;
+        }
+
+        .bot-message {
+            background-color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            color: #333;
+        }
+
+        .user-message {
+            background-color: #f0ecc7;
+            color: #333;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 20px;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            background-color: white;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 15px;
+            border: 2px solid #FFAE1A;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #f0ecc7;
+        }
+
+        button.send-button {
+            background-color: #FFAE1A;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button.send-button:hover {
+            background-color: #f0ecc7;
+            color: #333;
+        }
+
+        /* 저장 버튼 스타일 */
+        .save-button {
+            margin: 10px 20px 20px; /* 여백 조정 */
+            padding: 15px 20px;
+            background-color: #f0ecc7;
+            color: #FFAE1A;
+            border: 2px solid #FFAE1A;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .save-button:hover {
+            background-color: #FFAE1A;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>프로젝트 계획</h2>
+            <p class="description">프로젝트 계획을 짜 줄 당신의 챗봇입니다. 인사해보세요.</p>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="input-container">
+            <input type="text" placeholder="메시지를 입력하세요..." id="user-input">
+            <button class="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+        <button class="save-button" id="save-button">저장</button> <!-- 저장 버튼 -->
+    </div>
+
+    <script>
+        // 대화 데이터를 저장할 객체
+        const chatData = {
+            projectName: "",
+            projectGoal: "",
+            teamMembers: []
+        };
+    
+        // 서버로 메시지 전송하는 함수
+        async function sendMessageToServer(userMessage) {
+            const response = await fetch("/new_proj", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage }),
+            });
+            const data = await response.json();
+            return data.response;
+        }
+    
+        // 대화 내용을 UI에 추가하는 함수
+        function addMessage(content, sender = "bot") {
+            const chatMessages = document.getElementById("chat-messages");
+            const message = document.createElement("div");
+            message.className = `message ${sender === "bot" ? "bot-message" : "user-message"}`;
+            message.innerText = content;
+    
+            chatMessages.appendChild(message);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // 스크롤을 맨 아래로
+        }
+    
+        // 사용자 메시지 전송 처리
+        document.querySelector(".send-button").addEventListener("click", async () => {
+            const userInput = document.getElementById("user-input");
+            const userMessage = userInput.value.trim();
+    
+            if (userMessage) {
+                addMessage(userMessage, "user");
+                userInput.value = "";
+    
+                try {
+                    // 서버로 메시지 전송 및 챗봇 응답 받기
+                    const botResponse = await sendMessageToServer(userMessage);
+                    addMessage(botResponse, "bot");
+    
+                    // 챗봇 응답을 분석해 chatData에 추가
+                    processChatResponse(userMessage, botResponse);
+                } catch (error) {
+                    addMessage("오류가 발생했습니다. 다시 시도해주세요.", "bot");
+                }
+            }
+        });
+    
+        // Enter 키로 메시지 전송
+        document.getElementById("user-input").addEventListener("keypress", (event) => {
+            if (event.key === "Enter") {
+                document.querySelector(".send-button").click();
+            }
+        });
+    
+        // 챗봇 응답을 분석하여 chatData에 추가
+        function processChatResponse(userMessage, botResponse) {
+            if (botResponse.includes("프로젝트 이름")) {
+                chatData.projectName = userMessage;
+            } else if (botResponse.includes("프로젝트 목표")) {
+                chatData.projectGoal = userMessage;
+            } else if (botResponse.includes("팀원")) {
+                const teamMember = parseTeamMember(userMessage); // 팀원 데이터 추출
+                if (teamMember) chatData.teamMembers.push(teamMember);
+            }
+        }
+    
+        // 팀원 정보를 파싱하는 함수 (예: "Alice는 Developer입니다.")
+        function parseTeamMember(userMessage) {
+            const match = userMessage.match(/(.+)\s+는\s+(.+)입니다/); // 간단한 정규식
+            if (match) {
+                return { name: match[1], role: match[2] };
+            }
+            return null;
+        }
+    
+        // 저장 버튼 클릭 시 chatData를 서버로 전송
+        document.getElementById("save-button").addEventListener("click", async () => {
+            try {
+                const response = await fetch("/save_project", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(chatData)
+                });
+    
+                if (response.ok) {
+                    alert("프로젝트가 성공적으로 저장되었습니다!");
+                    window.location.href = "/import_proj"; // import_proj.html로 이동
+                } else {
+                    console.error("프로젝트 저장 실패");
+                    alert("저장 중 문제가 발생했습니다.");
+                }
+            } catch (error) {
+                console.error("저장 중 에러 발생:", error);
+                alert("저장 중 에러가 발생했습니다. 다시 시도해주세요.");
+            }
+        });
+    </script>    
+</body>
+</html>
